@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PR design — render HTML/SVG artifacts inline in the conversation (#17818)</title>
+    <style>
+      :root {
+        --ink: #14171a;
+        --muted: #5b6570;
+        --line: #e3e7ea;
+        --bg: #ffffff;
+        --panel: #f7f9fa;
+        --add: #1a7f4b;
+        --add-bg: #eaf7f0;
+        --del: #b3261e;
+        --del-bg: #fdecea;
+        --accent: #1f6feb;
+        --accent-bg: #eaf1fd;
+        --warn: #9a6700;
+        --warn-bg: #fff8e5;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 24px 96px; }
+      header.top { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 32px; }
+      .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: 12px; color: var(--muted); font-weight: 600; }
+      h1 { font-size: 30px; line-height: 1.25; margin: 10px 0 12px; }
+      h2 { font-size: 21px; margin: 44px 0 12px; padding-top: 8px; }
+      h3 { font-size: 17px; margin: 26px 0 8px; }
+      p { margin: 10px 0; }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+      code { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+      .lede { font-size: 17px; color: #2b3138; }
+      .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+      .tag { font-size: 12px; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 3px 10px; color: var(--muted); }
+      .tag.add { color: var(--add); background: var(--add-bg); border-color: #cfe9dc; }
+      .tag.del { color: var(--del); background: var(--del-bg); border-color: #f6d3d0; }
+      .callout { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--accent-bg); border-radius: 8px; padding: 14px 18px; margin: 18px 0; }
+      .callout.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+      .callout .star { font-weight: 700; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+      @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+      .card { border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; background: var(--bg); }
+      .card h4 { margin: 0 0 6px; font-size: 15px; }
+      .panel { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: var(--panel); }
+      .panel.bad { background: var(--del-bg); border-color: #f0cdc9; }
+      .panel.good { background: var(--add-bg); border-color: #cfe9dc; }
+      .panel h5 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+      pre { background: #0d1117; color: #e6edf3; border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: 12.5px; line-height: 1.55; }
+      pre .c { color: #8b949e; }
+      pre .k { color: #ff7b72; }
+      pre .s { color: #a5d6ff; }
+      table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 14px; }
+      th, td { text-align: left; border-bottom: 1px solid var(--line); padding: 8px 10px; }
+      th { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+      td.num { text-align: right; font-variant-numeric: tabular-nums; }
+      .files { list-style: none; margin: 0; padding: 0; }
+      .files li { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 6px; background: var(--bg); }
+      .files .dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+      .dot.g { background: var(--add); } .dot.r { background: var(--del); } .dot.y { background: #d4a72c; } .dot.m { background: #8b949e; }
+      .files .path { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .files .stat { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+      details { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 12px 0; background: var(--panel); }
+      summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+      figure { margin: 16px 0; }
+      figure img { max-width: 100%; border: 1px solid var(--line); border-radius: 8px; display: block; }
+      figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+      .svgwrap { border: 1px solid var(--line); border-radius: 10px; padding: 8px; background: #fff; overflow-x: auto; }
+      .note { font-size: 13px; color: var(--muted); }
+      hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <div class="kicker">Agent Canvas · PR design doc</div>
+        <h1>Render HTML/SVG artifacts inline in the conversation</h1>
+        <p class="lede">
+          Today only Markdown files get a rich inline preview. Every other artifact —
+          including the HTML and SVG the agent just wrote — is dumped into a
+          <code>CodeBlock</code> as source text. This PR adds a sandboxed live preview
+          for HTML/SVG, reusing the Markdown card's pattern instead of inventing a
+          second one.
+        </p>
+        <div class="meta">
+          <span class="tag add">🟢 +610 / −126</span>
+          <span class="tag">10 files</span>
+          <span class="tag">base <span class="mono">21cc5c6</span></span>
+          <span class="tag">head <span class="mono">120b8b4</span></span>
+          <span class="tag">Fixes #17818</span>
+          <span class="tag">additive · no API break</span>
+        </div>
+      </header>
+
+      <div class="callout">
+        <p style="margin:0">
+          <span class="star">★ What a reviewer should know first.</span>
+          The preview is a
+          <a href="https://github.com/analisaperlengkapan/OpenHands/blob/120b8b4/src/components/features/chat/tool-visualizers/primitives/artifact-preview.tsx#L126-L131"><code>&lt;iframe sandbox="allow-same-origin"&gt;</code></a>
+          pointed at the workspace <em>static URL</em>. It has
+          <strong>no <code>allow-scripts</code></strong>, so agent-written
+          <code>&lt;script&gt;</code> and inline handlers stay inert — verified in a real
+          browser below (the console logs
+          <code>Blocked script execution … 'allow-scripts' permission is not set</code>
+          and the heading is unchanged). Rendering from a real URL, not a
+          <code>data:</code> URI, is what lets relative <code>./style.css</code> resolve
+          (the long-standing bug #15752). Everything else is additive: one new util, one
+          new primitive, and a shared event-reader extracted from the Markdown card.
+        </p>
+      </div>
+
+      <h2 id="what">What changed</h2>
+      <p>
+        A file-editor <em>create</em> event whose path ends in <code>.html</code>,
+        <code>.htm</code> or <code>.svg</code> now renders an inline card with a
+        height-clipped, sandboxed live preview plus <strong>Expand</strong>,
+        <strong>View</strong>, <strong>Copy</strong> and <strong>Download</strong> actions
+        — mirroring the Markdown artifact card shipped in #16185. Markdown behavior is
+        unchanged; the Markdown card was refactored to share the same plumbing.
+      </p>
+
+      <h3>Flow, before → after</h3>
+      <div class="svgwrap">
+        <svg viewBox="0 0 1000 360" width="100%" role="img" aria-label="Before/after flow for a file-editor create event">
+          <defs>
+            <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L7,3 L0,6 z" fill="#8b949e" />
+            </marker>
+            <marker id="arA" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L7,3 L0,6 z" fill="#1f6feb" />
+            </marker>
+          </defs>
+
+          <!-- BEFORE -->
+          <text x="20" y="26" font-size="13" font-weight="700" fill="#b3261e">BEFORE — main @ 21cc5c6</text>
+          <rect x="20" y="40" width="180" height="46" rx="8" fill="#f7f9fa" stroke="#e3e7ea" />
+          <text x="34" y="60" font-size="12" fill="#14171a">FileEditorAction</text>
+          <text x="34" y="76" font-size="11" fill="#5b6570" class="mono">command: "create"</text>
+
+          <line x1="200" y1="63" x2="248" y2="63" stroke="#8b949e" stroke-width="1.5" marker-end="url(#ar)" />
+
+          <rect x="250" y="34" width="200" height="58" rx="8" fill="#f7f9fa" stroke="#e3e7ea" />
+          <text x="264" y="54" font-size="12" fill="#14171a">renderFileContent(content)</text>
+          <text x="264" y="70" font-size="11" fill="#5b6570" class="mono">file-editor.tsx:73</text>
+          <text x="264" y="85" font-size="11" fill="#b3261e">only isMarkdownFilePath(path)</text>
+
+          <line x1="450" y1="63" x2="498" y2="63" stroke="#8b949e" stroke-width="1.5" marker-end="url(#ar)" />
+
+          <rect x="500" y="30" width="200" height="66" rx="8" fill="#f7f9fa" stroke="#e3e7ea" />
+          <text x="514" y="50" font-size="12" fill="#14171a">MarkdownFilePreview</text>
+          <text x="514" y="66" font-size="11" fill="#5b6570">clipped rich preview</text>
+          <text x="514" y="82" font-size="11" fill="#b3261e">✗ .html / .svg fall through</text>
+
+          <line x1="700" y1="63" x2="748" y2="63" stroke="#8b949e" stroke-width="1.5" marker-end="url(#ar)" />
+
+          <rect x="750" y="30" width="220" height="66" rx="8" fill="#fdecea" stroke="#f0cdc9" />
+          <text x="764" y="50" font-size="12" fill="#14171a">&lt;CodeBlock&gt; raw source</text>
+          <text x="764" y="66" font-size="11" fill="#5b6570">agent's HTML shown as text</text>
+          <text x="764" y="82" font-size="11" fill="#b3261e">user must open the Files drawer</text>
+
+          <line x1="20" y1="150" x2="980" y2="150" stroke="#e3e7ea" />
+
+          <!-- AFTER -->
+          <text x="20" y="182" font-size="13" font-weight="700" fill="#1a7f4b">AFTER — head @ 120b8b4</text>
+          <rect x="20" y="196" width="180" height="46" rx="8" fill="#f7f9fa" stroke="#e3e7ea" />
+          <text x="34" y="216" font-size="12" fill="#14171a">FileEditorAction</text>
+          <text x="34" y="232" font-size="11" fill="#5b6570" class="mono">command: "create"</text>
+
+          <line x1="200" y1="219" x2="248" y2="219" stroke="#1f6feb" stroke-width="1.5" marker-end="url(#arA)" />
+
+          <rect x="250" y="190" width="200" height="58" rx="8" fill="#eaf1fd" stroke="#c9dcf9" />
+          <text x="264" y="210" font-size="12" fill="#14171a">renderFileContent(content)</text>
+          <text x="264" y="226" font-size="11" fill="#5b6570" class="mono">file-editor.tsx:73</text>
+          <text x="264" y="241" font-size="11" fill="#1a7f4b">+ isFramePreviewablePath(path)</text>
+
+          <line x1="450" y1="219" x2="498" y2="219" stroke="#1f6feb" stroke-width="1.5" marker-end="url(#arA)" />
+
+          <rect x="500" y="186" width="200" height="66" rx="8" fill="#eaf1fd" stroke="#c9dcf9" />
+          <text x="514" y="206" font-size="12" fill="#14171a">ArtifactPreview</text>
+          <text x="514" y="222" font-size="11" fill="#5b6570" class="mono">artifact-preview.tsx</text>
+          <text x="514" y="238" font-size="11" fill="#1a7f4b">NEW · sandboxed frame</text>
+
+          <line x1="700" y1="219" x2="748" y2="219" stroke="#1f6feb" stroke-width="1.5" marker-end="url(#arA)" />
+
+          <rect x="750" y="186" width="220" height="66" rx="8" fill="#eaf7f0" stroke="#cfe9dc" />
+          <text x="764" y="206" font-size="12" fill="#14171a">&lt;iframe sandbox="allow-same-origin"&gt;</text>
+          <text x="764" y="222" font-size="11" fill="#5b6570">workspace static URL → relative assets resolve</text>
+          <text x="764" y="238" font-size="11" fill="#1a7f4b">no allow-scripts → agent script inert</text>
+
+          <!-- side note -->
+          <rect x="250" y="276" width="450" height="66" rx="8" fill="#fff8e5" stroke="#f0e0b0" />
+          <text x="264" y="296" font-size="12" fill="#14171a">Lazy mount: IntersectionObserver</text>
+          <text x="264" y="312" font-size="11" fill="#5b6570">the frame is not created until the card is scrolled into view,</text>
+          <text x="264" y="327" font-size="11" fill="#5b6570">so a long conversation never keeps every preview alive</text>
+        </svg>
+      </div>
+
+      <h2 id="api">The one contract that matters: the event predicate</h2>
+      <p>
+        The Markdown card owned both the renderer <em>and</em> the "is this event an
+        artifact create?" predicate. The second preview type needs that predicate too, so
+        it moved to a shared helper and now spans the artifact allowlist instead of
+        Markdown only. This is the only signature change in the PR.
+      </p>
+      <div class="grid2">
+        <div class="panel bad">
+          <h5>Before — markdown-file-preview.tsx:144</h5>
+          <pre><span class="k">export function</span> isMarkdownFileEditorEvent(
+  event, correspondingAction?
+): boolean {
+  <span class="c">// path + command === "create" &amp;&amp;</span>
+  <span class="c">// isMarkdownFilePath(path)</span>
+}</pre>
+          <p class="note" style="margin-bottom:0">Markdown-only. HTML/SVG return <code>false</code>.</p>
+        </div>
+        <div class="panel good">
+          <h5>After — markdown-file-preview.tsx:40</h5>
+          <pre><span class="k">export function</span> isPreviewableFileEditorEvent(
+  event, correspondingAction?
+): boolean {
+  <span class="c">// path + command === "create" &amp;&amp;</span>
+  <span class="c">// isPreviewableArtifactPath(path)</span>
+}
+
+<span class="c">/** @deprecated alias kept for callers */</span>
+<span class="k">export const</span> isMarkdownFileEditorEvent =
+  isPreviewableFileEditorEvent;</pre>
+          <p class="note" style="margin-bottom:0">
+            Markdown <em>or</em> HTML/SVG. Old name still exported, so no consumer breaks.
+          </p>
+        </div>
+      </div>
+      <p>
+        The allowlist itself is the second small addition —
+        <a href="https://github.com/analisaperlengkapan/OpenHands/blob/120b8b4/src/utils/is-previewable-file-path.ts#L9"><code>FRAME_PREVIEW_EXTS = { html, htm, svg }</code></a>
+        — kept deliberately tiny, with a comment saying why: these are formats a browser
+        can render from a URL, and anything else stays on the CodeBlock/DiffView path.
+      </p>
+
+      <h2 id="files">Changed files</h2>
+      <ul class="files">
+        <li><span class="dot g"></span><span class="path mono">src/utils/is-previewable-file-path.ts</span><span class="stat">+34 · added</span></li>
+        <li><span class="dot g"></span><span class="path mono">…/tool-visualizers/primitives/artifact-preview.tsx</span><span class="stat">+198 · added</span></li>
+        <li><span class="dot g"></span><span class="path mono">…/tool-visualizers/primitives/file-editor-event.ts</span><span class="stat">+116 · added</span></li>
+        <li><span class="dot y"></span><span class="path mono">…/tool-visualizers/primitives/markdown-file-preview.tsx</span><span class="stat">+27 −104 · refactor</span></li>
+        <li><span class="dot y"></span><span class="path mono">…/tool-visualizers/file-editor/file-editor.tsx</span><span class="stat">+20 · changed</span></li>
+        <li><span class="dot y"></span><span class="path mono">…/conversation-events/chat/group-events.ts</span><span class="stat">+8 −8 · changed</span></li>
+        <li><span class="dot y"></span><span class="path mono">…/event-message-components/generic-event-message-wrapper.tsx</span><span class="stat">+6 −6 · changed</span></li>
+        <li><span class="dot g"></span><span class="path mono">__tests__/…/primitives/artifact-preview.test.tsx</span><span class="stat">+133</span></li>
+        <li><span class="dot g"></span><span class="path mono">__tests__/utils/is-previewable-file-path.test.ts</span><span class="stat">+47</span></li>
+        <li><span class="dot y"></span><span class="path mono">__tests__/…/conversation-events/chat/group-events.test.ts</span><span class="stat">+43</span></li>
+      </ul>
+
+      <h2 id="card">File cards</h2>
+
+      <div class="card">
+        <h4>🟢 <span class="mono">artifact-preview.tsx</span> — the new primitive</h4>
+        <p class="note">No "before": this file did not exist. Its role is to render one artifact.</p>
+        <p>
+          Props are <code>{ content, path, staticUrl, query, onView }</code>. The frame
+          body is gated on <code>staticUrl &amp;&amp; inView</code>, so the iframe is only
+          created once the card has intersected the viewport; until then a loading /
+          error placeholder occupies the same box, which keeps the card height stable and
+          avoids layout shift.
+        </p>
+        <pre><span class="c">// artifact-preview.tsx:118-135</span>
+{staticUrl &amp;&amp; inView ? (
+  &lt;iframe
+    title={path}
+    src={staticUrl}
+    <span class="c">// allow-same-origin → relative &lt;link&gt;/&lt;img&gt; resolve</span>
+    <span class="c">// no allow-scripts  → agent &lt;script&gt; stays inert</span>
+    sandbox=<span class="s">"allow-same-origin"</span>
+    data-testid=<span class="s">"artifact-preview-frame"</span>
+  /&gt;
+) : ( &lt;Pending /&gt; )}</pre>
+        <details>
+          <summary>Why <code>allow-same-origin</code> without <code>allow-scripts</code> is the safe pairing</summary>
+          <p class="note">
+            <code>allow-same-origin</code> alone lets the framed document keep the
+            fileserver origin so its own relative subresources load, but without
+            <code>allow-scripts</code> the browser refuses to execute scripts in that
+            origin — so the agent's markup cannot reach the app's <code>localStorage</code>,
+            session keys, or parent DOM. This mirrors the posture already used by
+            <code>FileContentViewer</code> for the Files drawer, so the two preview paths
+            agree.
+          </p>
+        </details>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h4>✏️ <span class="mono">file-editor.tsx</span> — one extra branch</h4>
+        <p class="note"><code>renderFileContent()</code> previously had a single Markdown branch; it now has two.</p>
+        <div class="grid2">
+          <div class="panel bad">
+            <h5>Before — file-editor.tsx:73</h5>
+            <pre><span class="k">if</span> (path &amp;&amp; command === <span class="s">"create"</span>
+    &amp;&amp; isMarkdownFilePath(path)) {
+  <span class="k">return</span> { chip: <span class="k">null</span>,
+           body: &lt;MarkdownFilePreview … /&gt; };
+}
+<span class="k">return</span> { chip, body: &lt;CodeBlock … /&gt; };</pre>
+          </div>
+          <div class="panel good">
+            <h5>After — file-editor.tsx:76, :92</h5>
+            <pre><span class="k">if</span> (path &amp;&amp; command === <span class="s">"create"</span>
+    &amp;&amp; isMarkdownFilePath(path)) { … }
+
+<span class="c">// HTML/SVG → live sandboxed frame</span>
+<span class="k">if</span> (path &amp;&amp; command === <span class="s">"create"</span>
+    &amp;&amp; isFramePreviewablePath(path)) {
+  <span class="k">return</span> { chip: <span class="k">null</span>,
+           body: &lt;ArtifactPreview … /&gt; };
+}</pre>
+          </div>
+        </div>
+        <p class="note">
+          Both artifact branches set <code>chip: null</code>: the card owns its own
+          filename affordance, so the separate path chip is suppressed to avoid showing
+          the filename twice.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h4>✏️ <span class="mono">group-events.ts</span> + <span class="mono">generic-event-message-wrapper.tsx</span> — keep the card visible</h4>
+        <p class="note">
+          Mechanical in shape: both call sites swap
+          <code>isMarkdownFileEditorEvent</code> → <code>isPreviewableFileEditorEvent</code>
+          (<a href="https://github.com/analisaperlengkapan/OpenHands/blob/120b8b4/src/components/conversation-events/chat/group-events.ts#L34">group-events.ts:34</a>,
+          <a href="https://github.com/analisaperlengkapan/OpenHands/blob/120b8b4/src/components/conversation-events/chat/event-message-components/generic-event-message-wrapper.tsx#L107-L109">wrapper:107</a>).
+          The behavior change is intentional and load-bearing: an HTML/SVG <em>create</em> is
+          now a group-breaker and starts expanded, exactly as Markdown creates already do —
+          otherwise the clipped preview would be hidden inside a collapsed action group.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h4>✏️ <span class="mono">markdown-file-preview.tsx</span> — refactor, not a rewrite</h4>
+        <p class="note">
+          The Markdown <em>renderer</em> is untouched. What moved out is the shared reader
+          (path/command resolution) into <span class="mono">file-editor-event.ts</span>, so
+          both cards resolve an event identically — including the case where an
+          observation omits <code>path</code> or <code>command</code> and the originating
+          action has to be consulted. That is why the file shows <code>−104</code> lines
+          while gaining no new behavior.
+        </p>
+      </div>
+
+      <h2 id="evidence">Evidence</h2>
+      <p>
+        <code>.pr/capture-17818.mjs</code> (committed with this PR) reproduces every
+        value below. All of the below is from the running app in mock mode
+        (<code>npm run dev:mock</code>, mock API, no LLM). The demo conversation fixture
+        now creates a <code>.md</code>, a <code>.html</code> (with a sibling
+        <code>./report.css</code>) and a <code>.svg</code>, so the flow is reviewable
+        without a live stack. The driver routes the two frame URLs to the same bytes the
+        app's own mock serves, because MSW is a service worker and does not intercept an
+        iframe's document navigation.
+      </p>
+
+      <figure>
+        <img src="17818-card-html.png" alt="Inline HTML artifact card in the conversation, clipped preview with the rendered heading and styled list" />
+        <figcaption>
+          HTML create → clipped card. The heading is blue because the relative
+          <code>./report.css</code> resolved; it still reads
+          <strong>“Inline HTML artifact”</strong>, not “SCRIPT RAN”.
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="17818-card-svg.png" alt="Inline SVG artifact card in the conversation, showing the rendered bar chart" />
+        <figcaption>SVG create → the same card renders the chart from the workspace URL.</figcaption>
+      </figure>
+      <figure>
+        <img src="17818-expanded.png" alt="Expanded artifact preview taking the full card height" />
+        <figcaption>Expand toggles the frame from 160 px to 512 px.</figcaption>
+      </figure>
+
+      <h3>Probed values, real Chromium</h3>
+      <table>
+        <thead><tr><th>Observation</th><th>Value</th><th>Proves</th></tr></thead>
+        <tbody>
+          <tr><td>cards / frames rendered</td><td class="num">2 / 2</td><td>one card per HTML and SVG create</td></tr>
+          <tr><td><code>sandbox</code> attribute</td><td class="mono">allow-same-origin</td><td>no <code>allow-scripts</code></td></tr>
+          <tr><td>HTML frame <code>&lt;h1&gt;</code></td><td class="mono">"Inline HTML artifact"</td><td>agent script did not run</td></tr>
+          <tr><td>HTML <code>&lt;h1&gt;</code> colour</td><td class="mono">rgb(31,111,235)</td><td><code>./report.css</code> resolved</td></tr>
+          <tr><td>SVG frame root tag</td><td class="mono">svg</td><td>SVG renders as a document, not text</td></tr>
+          <tr><td>collapsed → expanded height</td><td class="num">160 → 512 px</td><td>Expand works</td></tr>
+          <tr><td>frame request URLs</td><td class="mono">…/workspace/report.html?v=2</td><td>real workspace URL, not <code>data:</code></td></tr>
+          <tr><td>console during load</td><td class="mono">Blocked script execution…</td><td>sandbox is enforced by the browser</td></tr>
+          <tr><td>HTTP responses for frames</td><td class="num">200</td><td>no error path exercised</td></tr>
+        </tbody>
+      </table>
+
+      <details>
+        <summary>How to reproduce</summary>
+        <pre>npm ci
+npm run dev:mock -- --port 3001
+# the demo conversation creates canvas.md, report.html (+ report.css) and chart.svg
+OUT_DIR=.pr node .pr/capture-17818.mjs   <span class="c"># prints the JSON probed above</span></pre>
+      </details>
+
+      <h2 id="risk">Risk and follow-ups</h2>
+      <ul>
+        <li>
+          <strong>Interactivity is off by default.</strong> The issue's acceptance
+          criteria ask for interactive content to be <em>opt-in</em>; this PR ships the
+          safe half (no scripts). A per-conversation "allow scripts in previews" toggle is
+          deliberately not in scope — it needs a product decision on where the trust
+          prompt lives.
+        </li>
+        <li>
+          <strong>No regression to Markdown.</strong> The Markdown renderer is unchanged;
+          only its predicate and event-reader moved. The pre-existing Markdown tests and
+          the wider chat suite stay green.
+        </li>
+        <li>
+          <strong>Interaction with #17817 (virtualization).</strong> Previews mount only
+          on intersection, so they compose with row virtualization: an off-screen row is
+          not mounted at all, and an on-screen-but-not-yet-scrolled-to frame is not
+          created. If #17817 lands first, the lazy-mount behavior is what keeps preview
+          cost bounded.
+        </li>
+        <li>
+          <strong>Not previewed, on purpose:</strong> arbitrary JS bundles, binary formats,
+          and anything outside <code>{html, htm, svg}</code> + Markdown stay on the
+          CodeBlock/DiffView path.
+        </li>
+      </ul>
+
+      <hr />
+      <p class="note">
+        Temporary review aid. Lives in <code>.pr/</code> on the PR branch only; the
+        <code>PR Artifacts</code> workflow removes it after approval.
+      </p>
+    </div>
+  </body>
+</html>
