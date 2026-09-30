@@ -95,7 +95,7 @@
           <span class="tag add">🟢 +610 / −126</span>
           <span class="tag">10 files</span>
           <span class="tag">base <span class="mono">21cc5c6</span></span>
-          <span class="tag">head <span class="mono">120b8b4</span></span>
+          <span class="tag">head <span class="mono">88cadd0</span></span>
           <span class="tag">Fixes #17818</span>
           <span class="tag">additive · no API break</span>
         </div>
@@ -105,7 +105,7 @@
         <p style="margin:0">
           <span class="star">★ What a reviewer should know first.</span>
           The preview is a
-          <a href="https://github.com/analisaperlengkapan/OpenHands/blob/120b8b4/src/components/features/chat/tool-visualizers/primitives/artifact-preview.tsx#L126-L131"><code>&lt;iframe sandbox="allow-same-origin"&gt;</code></a>
+          <a href="https://github.com/analisaperlengkapan/OpenHands/blob/88cadd0/src/components/features/chat/tool-visualizers/primitives/artifact-preview.tsx#L126-L131"><code>&lt;iframe sandbox="allow-same-origin"&gt;</code></a>
           pointed at the workspace <em>static URL</em>. It has
           <strong>no <code>allow-scripts</code></strong>, so agent-written
           <code>&lt;script&gt;</code> and inline handlers stay inert — verified in a real
@@ -170,7 +170,7 @@
           <line x1="20" y1="150" x2="980" y2="150" stroke="#e3e7ea" />
 
           <!-- AFTER -->
-          <text x="20" y="182" font-size="13" font-weight="700" fill="#1a7f4b">AFTER — head @ 120b8b4</text>
+          <text x="20" y="182" font-size="13" font-weight="700" fill="#1a7f4b">AFTER — head @ 88cadd0</text>
           <rect x="20" y="196" width="180" height="46" rx="8" fill="#f7f9fa" stroke="#e3e7ea" />
           <text x="34" y="216" font-size="12" fill="#14171a">FileEditorAction</text>
           <text x="34" y="232" font-size="11" fill="#5b6570" class="mono">command: "create"</text>
@@ -241,7 +241,7 @@
       </div>
       <p>
         The allowlist itself is the second small addition —
-        <a href="https://github.com/analisaperlengkapan/OpenHands/blob/120b8b4/src/utils/is-previewable-file-path.ts#L9"><code>FRAME_PREVIEW_EXTS = { html, htm, svg }</code></a>
+        <a href="https://github.com/analisaperlengkapan/OpenHands/blob/88cadd0/src/utils/is-previewable-file-path.ts#L9"><code>FRAME_PREVIEW_EXTS = { html, htm, svg }</code></a>
         — kept deliberately tiny, with a comment saying why: these are formats a browser
         can render from a URL, and anything else stays on the CodeBlock/DiffView path.
       </p>
@@ -335,8 +335,8 @@
         <p class="note">
           Mechanical in shape: both call sites swap
           <code>isMarkdownFileEditorEvent</code> → <code>isPreviewableFileEditorEvent</code>
-          (<a href="https://github.com/analisaperlengkapan/OpenHands/blob/120b8b4/src/components/conversation-events/chat/group-events.ts#L34">group-events.ts:34</a>,
-          <a href="https://github.com/analisaperlengkapan/OpenHands/blob/120b8b4/src/components/conversation-events/chat/event-message-components/generic-event-message-wrapper.tsx#L107-L109">wrapper:107</a>).
+          (<a href="https://github.com/analisaperlengkapan/OpenHands/blob/88cadd0/src/components/conversation-events/chat/group-events.ts#L34">group-events.ts:34</a>,
+          <a href="https://github.com/analisaperlengkapan/OpenHands/blob/88cadd0/src/components/conversation-events/chat/event-message-components/generic-event-message-wrapper.tsx#L107-L109">wrapper:107</a>).
           The behavior change is intentional and load-bearing: an HTML/SVG <em>create</em> is
           now a group-breaker and starts expanded, exactly as Markdown creates already do —
           otherwise the clipped preview would be hidden inside a collapsed action group.
