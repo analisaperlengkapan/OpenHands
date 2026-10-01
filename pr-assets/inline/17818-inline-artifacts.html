@@ -105,7 +105,7 @@
         <p style="margin:0">
           <span class="star">★ What a reviewer should know first.</span>
           The preview is a
-          <a href="https://github.com/analisaperlengkapan/OpenHands/blob/88cadd0/src/components/features/chat/tool-visualizers/primitives/artifact-preview.tsx#L126-L131"><code>&lt;iframe sandbox="allow-same-origin"&gt;</code></a>
+          <a href="https://github.com/analisaperlengkapan/OpenHands/blob/88cadd0/src/components/features/chat/tool-visualizers/primitives/artifact-preview.tsx#L165-L184"><code>&lt;iframe sandbox="allow-same-origin"&gt;</code></a>
           pointed at the workspace <em>static URL</em>. It has
           <strong>no <code>allow-scripts</code></strong>, so agent-written
           <code>&lt;script&gt;</code> and inline handlers stay inert — verified in a real
@@ -241,7 +241,7 @@
       </div>
       <p>
         The allowlist itself is the second small addition —
-        <a href="https://github.com/analisaperlengkapan/OpenHands/blob/88cadd0/src/utils/is-previewable-file-path.ts#L9"><code>FRAME_PREVIEW_EXTS = { html, htm, svg }</code></a>
+        <a href="https://github.com/analisaperlengkapan/OpenHands/blob/88cadd0/src/utils/is-previewable-file-path.ts#L8"><code>FRAME_PREVIEW_EXTS = { html, htm, svg }</code></a>
         — kept deliberately tiny, with a comment saying why: these are formats a browser
         can render from a URL, and anything else stays on the CodeBlock/DiffView path.
       </p>
@@ -272,7 +272,7 @@
           error placeholder occupies the same box, which keeps the card height stable and
           avoids layout shift.
         </p>
-        <pre><span class="c">// artifact-preview.tsx:118-135</span>
+        <pre><span class="c">// artifact-preview.tsx:156-184 @ 88cadd0</span>
 {staticUrl &amp;&amp; inView ? (
   &lt;iframe
     title={path}
