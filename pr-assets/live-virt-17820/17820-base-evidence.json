@@ -1,0 +1,159 @@
+{
+  "posts": {
+    "status": [
+      200,
+      200
+    ]
+  },
+  "loaded": {
+    "shell": false,
+    "rows": 0,
+    "groups": 0,
+    "toggles": 0,
+    "userBubbles": 25,
+    "agentBubbles": 0,
+    "codeBlocks": 0,
+    "domNodes": 921,
+    "scrollTop": 1142,
+    "scrollHeight": 1956,
+    "clientHeight": 814,
+    "loadingOlder": false
+  },
+  "headVirtualized": false,
+  "scrollUp": {
+    "iterations": 10,
+    "sawSpinner": true,
+    "anchorBefore": {
+      "text": "Run these three shell commands one at a ",
+      "y": 40
+    },
+    "anchorAfter": {
+      "text": "Run these three shell commands one at a ",
+      "y": 40
+    },
+    "beforeState": {
+      "shell": false,
+      "rows": 0,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 203,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 3105,
+      "scrollTop": 0,
+      "scrollHeight": 15856,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "state": {
+      "shell": false,
+      "rows": 0,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 203,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 3105,
+      "scrollTop": 0,
+      "scrollHeight": 15856,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "loaded": 205,
+    "anchorStationary": true
+  },
+  "autoscrollPinned": {
+    "pinnedBefore": {
+      "shell": false,
+      "rows": 0,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 203,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 3101,
+      "scrollTop": 15042,
+      "scrollHeight": 15856,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "pinnedAfter": {
+      "shell": false,
+      "rows": 0,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 204,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 3113,
+      "scrollTop": 15118,
+      "scrollHeight": 15932,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "following": true
+  },
+  "autoscrollScrolledUp": {
+    "upBefore": {
+      "shell": false,
+      "rows": 0,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 204,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 3117,
+      "scrollTop": 5576,
+      "scrollHeight": 15932,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "upAfter": {
+      "shell": false,
+      "rows": 0,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 205,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 3129,
+      "scrollTop": 5576,
+      "scrollHeight": 16008,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "stayed": true
+  },
+  "expand": {
+    "beforeExpand": {
+      "shell": false,
+      "rows": 0,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 205,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 3129,
+      "scrollTop": 0,
+      "scrollHeight": 16008,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "postExpand": {
+      "shell": false,
+      "rows": 0,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 205,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 3167,
+      "scrollTop": 0,
+      "scrollHeight": 16158,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "grew": true
+  },
+  "frames": 239
+}

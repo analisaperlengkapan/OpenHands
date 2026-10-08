@@ -1,0 +1,159 @@
+{
+  "posts": {
+    "status": [
+      200,
+      200
+    ]
+  },
+  "loaded": {
+    "shell": false,
+    "rows": 0,
+    "groups": 0,
+    "toggles": 0,
+    "userBubbles": 25,
+    "agentBubbles": 0,
+    "codeBlocks": 0,
+    "domNodes": 929,
+    "scrollTop": 1142,
+    "scrollHeight": 1956,
+    "clientHeight": 814,
+    "loadingOlder": false
+  },
+  "headVirtualized": true,
+  "scrollUp": {
+    "iterations": 6,
+    "sawSpinner": true,
+    "anchorBefore": {
+      "text": "QA padding message 126",
+      "y": 16
+    },
+    "anchorAfter": {
+      "text": "QA padding message 56",
+      "y": 24
+    },
+    "beforeState": {
+      "shell": true,
+      "rows": 25,
+      "groups": 0,
+      "toggles": 0,
+      "userBubbles": 25,
+      "agentBubbles": 0,
+      "codeBlocks": 0,
+      "domNodes": 959,
+      "scrollTop": 8296,
+      "scrollHeight": 16760,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "state": {
+      "shell": true,
+      "rows": 25,
+      "groups": 0,
+      "toggles": 0,
+      "userBubbles": 25,
+      "agentBubbles": 0,
+      "codeBlocks": 0,
+      "domNodes": 959,
+      "scrollTop": 2916,
+      "scrollHeight": 19032,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "loaded": 25,
+    "anchorStationary": true
+  },
+  "autoscrollPinned": {
+    "pinnedBefore": {
+      "shell": true,
+      "rows": 17,
+      "groups": 0,
+      "toggles": 0,
+      "userBubbles": 17,
+      "agentBubbles": 0,
+      "codeBlocks": 0,
+      "domNodes": 851,
+      "scrollTop": 17742,
+      "scrollHeight": 18556,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "pinnedAfter": {
+      "shell": true,
+      "rows": 17,
+      "groups": 0,
+      "toggles": 0,
+      "userBubbles": 17,
+      "agentBubbles": 0,
+      "codeBlocks": 0,
+      "domNodes": 851,
+      "scrollTop": 17834,
+      "scrollHeight": 18648,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "following": true
+  },
+  "autoscrollScrolledUp": {
+    "upBefore": {
+      "shell": true,
+      "rows": 26,
+      "groups": 0,
+      "toggles": 0,
+      "userBubbles": 26,
+      "agentBubbles": 0,
+      "codeBlocks": 0,
+      "domNodes": 972,
+      "scrollTop": 6331,
+      "scrollHeight": 17864,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "upAfter": {
+      "shell": true,
+      "rows": 26,
+      "groups": 0,
+      "toggles": 0,
+      "userBubbles": 26,
+      "agentBubbles": 0,
+      "codeBlocks": 0,
+      "domNodes": 972,
+      "scrollTop": 6331,
+      "scrollHeight": 17984,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "stayed": true
+  },
+  "expand": {
+    "beforeExpand": {
+      "shell": true,
+      "rows": 16,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 13,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 850,
+      "scrollTop": 0,
+      "scrollHeight": 20768,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "postExpand": {
+      "shell": true,
+      "rows": 14,
+      "groups": 1,
+      "toggles": 1,
+      "userBubbles": 11,
+      "agentBubbles": 2,
+      "codeBlocks": 0,
+      "domNodes": 862,
+      "scrollTop": 0,
+      "scrollHeight": 20918,
+      "clientHeight": 814,
+      "loadingOlder": false
+    },
+    "grew": true
+  },
+  "frames": 187
+}

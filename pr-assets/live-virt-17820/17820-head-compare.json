@@ -1,0 +1,72 @@
+{
+  "tag": "head",
+  "url": "http://127.0.0.1:18800/conversations/adb689a7-be9d-4ff1-99c2-b49b7ee37d31",
+  "initialSettleMs": 7197,
+  "backfillMs": 13262,
+  "before": {
+    "shell": false,
+    "rows": 0,
+    "messages": 25,
+    "domNodes": 929,
+    "scrollHeight": 1956,
+    "longestTaskMs": 199
+  },
+  "after": {
+    "shell": true,
+    "rows": 25,
+    "messages": 25,
+    "domNodes": 959,
+    "scrollHeight": 19032,
+    "longestTaskMs": 199
+  },
+  "timeline": [
+    {
+      "iter": 1,
+      "messages": 50,
+      "domNodes": 1233,
+      "rows": 0,
+      "shell": false,
+      "longestTaskMs": 199
+    },
+    {
+      "iter": 2,
+      "messages": 75,
+      "domNodes": 1533,
+      "rows": 0,
+      "shell": false,
+      "longestTaskMs": 199
+    },
+    {
+      "iter": 3,
+      "messages": 100,
+      "domNodes": 1833,
+      "rows": 0,
+      "shell": false,
+      "longestTaskMs": 199
+    },
+    {
+      "iter": 4,
+      "messages": 125,
+      "domNodes": 2133,
+      "rows": 0,
+      "shell": false,
+      "longestTaskMs": 199
+    },
+    {
+      "iter": 5,
+      "messages": 25,
+      "domNodes": 959,
+      "rows": 25,
+      "shell": true,
+      "longestTaskMs": 199
+    },
+    {
+      "iter": 6,
+      "messages": 25,
+      "domNodes": 959,
+      "rows": 25,
+      "shell": true,
+      "longestTaskMs": 199
+    }
+  ]
+}
